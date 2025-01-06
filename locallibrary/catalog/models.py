@@ -59,6 +59,13 @@ class Book(models.Model):
     def get_absolute_url(self):
         """Returns the URL to access a detail record for this book."""
         return reverse('book-detail', args=[str(self.id)])
+        
+    def display_genre(self):
+        """Create a string for the Genre. This is required to display genre in Admin."""
+        return ', '.join(genre.name for genre in self.genre.all()[:3])
+
+    display_genre.short_description = 'Genre'
+
 
 
 import uuid # Required for unique book instances
@@ -89,6 +96,9 @@ class BookInstance(models.Model):
 
     class Meta:
         ordering = ['due_back']
+        
+    def get_absolute_url(self):
+        return reverse('bookinstance-detail', args=[str(self.id)])
 
     def __str__(self):
         """String for representing the Model object."""
@@ -114,3 +124,25 @@ class Author(models.Model):
         return f'{self.last_name}, {self.first_name}'
 
 
+class Language(models.Model):
+    """Model representing a Language (e.g. English, French, Japanese, etc.)"""
+    name = models.CharField(max_length=200,
+                            unique=True,
+                            help_text="Enter the book's natural language (e.g. English, French, Japanese etc.)")
+
+    def get_absolute_url(self):
+        """Returns the url to access a particular language instance."""
+        return reverse('language-detail', args=[str(self.id)])
+
+    def __str__(self):
+        """String for representing the Model object (in Admin site etc.)"""
+        return self.name
+
+    class Meta:
+        constraints = [
+            UniqueConstraint(
+                Lower('name'),
+                name='language_name_case_insensitive_unique',
+                violation_error_message = "Language already exists (case insensitive match)"
+            ),
+        ]
