@@ -177,5 +177,7 @@ cython_debug/
 *.sqlite3
 
 # Xcode
-*.xcode*
+*.*xcode*
 
+# other files
+*.DS_Store
